@@ -57,7 +57,7 @@ fn main() -> color_eyre::Result<()> {
                 exit_with_error("Habit is already checked")
             }
 
-            state.checked.insert(file);
+            state.checked.insert(habit);
             state.last_date = now;
 
             fs::write(&*STATE_PATH, serde_json::to_string_pretty(&state)?)?;
