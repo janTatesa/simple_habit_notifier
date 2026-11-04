@@ -27,7 +27,7 @@ fn main() -> color_eyre::Result<()> {
             notify_rust::Notification::new()
                 .summary("Habit reminder")
                 .body(&habits)
-                .finalize()
+                .sound_name("dialog-information")
                 .show()?;
             std::thread::sleep(Duration::from_mins(delay_mins.into()));
         },
