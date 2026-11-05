@@ -3,7 +3,14 @@ use clap_complete::{ArgValueCompleter, CompleteEnv, CompletionCandidate, Shell};
 use owo_colors::OwoColorize;
 use serde::{Deserialize, Serialize};
 
-use std::{collections::HashSet, ffi::OsStr, fs, path::PathBuf, sync::LazyLock, time::Duration};
+use std::{
+    collections::{HashMap, HashSet},
+    ffi::OsStr,
+    fs,
+    path::PathBuf,
+    sync::LazyLock,
+    time::Duration,
+};
 
 use jiff::{Zoned, civil::Date};
 
@@ -57,9 +64,12 @@ fn main() -> color_eyre::Result<()> {
                 exit_with_error("Habit is already checked")
             }
 
-            state.checked.insert(habit);
-            state.last_date = now;
+            if state.last_date != now {
+                state.checked = HashSet::new();
+                state.last_date = now;
+            }
 
+            state.checked.insert(habit);
             fs::write(&*STATE_PATH, serde_json::to_string_pretty(&state)?)?;
         }
         Subcommand::Completion { shell } => {
