@@ -3,14 +3,7 @@ use clap_complete::{ArgValueCompleter, CompleteEnv, CompletionCandidate, Shell};
 use owo_colors::OwoColorize;
 use serde::{Deserialize, Serialize};
 
-use std::{
-    collections::{HashMap, HashSet},
-    ffi::OsStr,
-    fs,
-    path::PathBuf,
-    sync::LazyLock,
-    time::Duration,
-};
+use std::{collections::HashSet, ffi::OsStr, fs, path::PathBuf, sync::LazyLock, time::Duration};
 
 use jiff::{Zoned, civil::Date};
 
@@ -71,6 +64,14 @@ fn main() -> color_eyre::Result<()> {
 
             state.checked.insert(habit);
             fs::write(&*STATE_PATH, serde_json::to_string_pretty(&state)?)?;
+            let habits = file
+                .lines()
+                .filter(|habit| {
+                    !habit.is_empty() && (!state.checked.contains(*habit) || state.last_date != now)
+                })
+                .collect::<Vec<_>>()
+                .join(&" ∙ ".bright_black().to_string());
+            println!("{habits}",)
         }
         Subcommand::Completion { shell } => {
             let completions = match shell {
